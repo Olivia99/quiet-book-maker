@@ -6,12 +6,7 @@ body{
 
 
 
-img {
-	position: absolute;
-	margin-left: 15%;
-display:inline-block;
-  height:100%;
-}
+
 
 
 button{
@@ -24,30 +19,83 @@ ul{
 }
 
 
-character{
-z-index: -1000;   
+
+
+.container{
+	position: relative;
+	width: 700px;
+	height: 700px;
+	align-items: center;
 }
 
-.shirt{
-	visibility:hidden;
-  z-index: 2;
+
+
+
+.character{
+	width: 700px;
+	height: 700px;
+	position:absolute;
+	z-index: -1;
 }
 
-.pant{
-	visibility:hidden;
-  z-index: 1;
-	}
+.asset_wrapper{
+	width: 700px;
+	height:700px;
+	position: relative;	
+
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+
+}
+
+.top{
+	width: 250px;
+	height: 250px;
+	padding-top: 366px;
+	padding-left: 20px;
+	position:absolute;
+	z-index: 10;
+   }
 
 
+ 
+
+.bot{
+	width: 360px;
+	height: 300px;
+	position:absolute;
+	padding-left: 3px;
+	padding-top: 650px;
+	z-index: 2;
+   }
+
+   .hair_front{
+	width: 700px;
+	height: 700px;
+	position:absolute;
+	z-index: 12;
+
+   }
+
+   .hair_back{
+	width: 700px;
+	height: 700px;
+	position:absolute;
+	z-index: -10;
+
+   }
 
 
-
-
-
-
-
-
-
+   .shoes{
+	width: 180px;
+	height: 100px;
+	position:absolute;
+	padding-left: 24px;
+	padding-top: 540px;
+	z-index: 1;
+   }
 
 
 
