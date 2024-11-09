@@ -10,7 +10,7 @@ body{
 
 
 button{
-  margin-top:20%;
+  margin-top:20px;
 }
 
 ul{
@@ -53,13 +53,16 @@ ul{
 .top{
 	width: 250px;
 	height: 250px;
+	
+   }
+
+.top.pos{
+	
 	padding-top: 366px;
 	padding-left: 20px;
 	position:absolute;
 	z-index: 10;
    }
-
-
  
 
 .bot{
@@ -124,10 +127,13 @@ ul{
     padding: 10px;
     border: 1px solid #ccc;
     margin-top: 20px;
+	height: 600px;
+	overflow: scroll;
 }
 
 .category-image {
     width: 80px; /* Adjust as needed */
+	object-fit: contain;
     height: auto;
     cursor: pointer;
     transition: transform 0.2s;
@@ -137,11 +143,22 @@ ul{
     transform: scale(1.1);
 }
 
-.canvas{
+.playground{
 	display: flex;
 	flex-direction: row;
-<<<<<<< HEAD
+	gap: 60px;
 }
-=======
+
+
+#canvas {
+    width: 1584px;
+    height: 1224px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    border: 1px solid #ccc; /* Optional: for visual clarity */
+    padding: 10px;
+	margin-top: 100px;
+    gap: 10px; /* Spacing between components */
 }
->>>>>>> 905554992724a332d882174ecc89fece47883c6d
+

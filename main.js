@@ -85,6 +85,8 @@ function shuffleCharacterAssets() {
    document.querySelector('.shoes').src = selectedShoes.src;
    document.querySelector('.overall').src = selectedOverall.src;
     document.querySelector('.costum').src = selectedCostum.src;
+
+   
 }
 
 
@@ -97,14 +99,24 @@ function shuffleCharacterAssets() {
 
 
 
+
 // Event listeners for buttons
 document.addEventListener("DOMContentLoaded", () => {
 
     // Container where images will be displayed
 const imageListContainer = document.getElementById("imageListContainer");
 
+document.getElementById("shuffle_button").addEventListener("click", () => {
+    shuffleCharacterAssets();
+   // listCurrentComponents();
+});
+   
 
-    document.getElementById("shuffle_button").addEventListener("click", shuffleCharacterAssets);
+document.getElementById("generate_button").addEventListener("click", () => {
+   
+    listCurrentComponents();
+});
+   
 
     document.getElementById("top_button").addEventListener("click", () => {
         showCategoryImages("top");
@@ -161,7 +173,8 @@ function updateVisibleComponents(category) {
             break;
         case "shoes":
             // Shoes category does not affect visibility of other items
-           
+            top.style.display = "block";
+            bot.style.display = "block";
             costume.style.display = "none";
             break;
         default:
@@ -216,7 +229,48 @@ function updateVisibleComponents(category) {
         });
     }
     
+    function listCurrentComponents() {
+        const canvas = document.getElementById("canvas");
+        canvas.innerHTML = ""; // Clear previous list
     
+        // Array of component selectors
+        const components = [
+            { selector: '.hair_front', name: 'Hair (Front)' },
+            { selector: '.hair_back', name: 'Hair (Back)' },
+            { selector: '.character', name: 'Body' },
+            { selector: '.top', name: 'Top' },
+            { selector: '.bot', name: 'Bottom' },
+            { selector: '.shoes', name: 'Shoes' },
+            { selector: '.overall', name: 'Overall' },
+            { selector: '.costum', name: 'Costume' }
+        ];
+    
+        // Loop through components and add each visible one to the canvas
+        components.forEach(component => {
+            const element = document.querySelector(component.selector);
+            
+            if (element && element.style.display !== "none" && element.src) {
+                const img = new Image();
+                img.src = element.src;
+                img.className = "canvas-item draggable"; // Apply styles for display
+                img.alt = component.name; // Optional: for accessibility
+                
+                // Create a wrapper with label for the component
+                const wrapper = document.createElement("div");
+                wrapper.className = "canvas-item-wrapper";
+                wrapper.style.textAlign = "center"; // Center text and image
+    
+                // Label for the component
+                const label = document.createElement("span");
+                label.innerText = component.name;
+                wrapper.appendChild(label);
+                wrapper.appendChild(img);
+    
+                // Append to the canvas
+                canvas.appendChild(wrapper);
+            }
+        });
+    }
     
  // Function to change the displayed clothing based on selected item
  function changeClothing(category, imgSrc) {
@@ -241,14 +295,27 @@ function updateVisibleComponents(category) {
         default:
             console.error("Unknown category:", category);
     }
+// List current components after any selection
+   // listCurrentComponents();
 }
 
 
 
     
+
     // Load initial images
     loadAndCombineImages();
 
+    const canvas = document.getElementById("canvas");
+    if (canvas) {
+        initializeDraggableItems(canvas);
+    }
+
+
+
+
+
+    
 });
 
 
@@ -272,5 +339,48 @@ function Convert_HTML_To_PDF() {
         y: 0,
         width: 190*20, //target width in the PDF document
         windowWidth: 675*20 //window width in CSS pixels
+    });
+}
+
+
+function initializeDraggableItems() {
+    const canvas = document.getElementById("canvas");
+    const draggableItems = document.querySelectorAll("#canvas .draggable");
+
+    draggableItems.forEach(item => {
+        item.style.position = "absolute"; // Set each draggable item to position absolute
+
+        // Initialize variables for dragging
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        // Start dragging
+        item.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+            item.style.zIndex = 1000; // Bring the item to the front
+        });
+
+        // Move the item while dragging
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                // Calculate new position relative to canvas
+                const canvasRect = canvas.getBoundingClientRect();
+                const newX = e.clientX - canvasRect.left - offsetX;
+                const newY = e.clientY - canvasRect.top - offsetY;
+
+                // Constrain movement within canvas boundaries
+                item.style.left = `${Math.min(canvasRect.width - item.width, Math.max(0, newX))}px`;
+                item.style.top = `${Math.min(canvasRect.height - item.height, Math.max(0, newY))}px`;
+                console("dragged");
+            }
+        });
+
+        // Stop dragging
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+            item.style.zIndex = ""; // Reset z-index
+        });
     });
 }
