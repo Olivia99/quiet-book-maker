@@ -337,8 +337,8 @@ function Convert_HTML_To_PDF() {
         autoPaging: 'text',
         x: 0,
         y: 0,
-        width: 190*20, //target width in the PDF document
-        windowWidth: 675*20 //window width in CSS pixels
+        width: 1584, //target width in the PDF document
+        windowWidth: 1584 //window width in CSS pixels
     });
 }
 
