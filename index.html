@@ -1,18 +1,25 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Bunny Dress Up</title>
+    <title>Chibi Doll Dress Up</title>
     <link rel="stylesheet" type="text/css" href="dressup.css">
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+   
+   <!-- html2canvas library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <script src="main.js"></script>
 </head>
 <body>
    
-<div>
+<div class="canvas" >
 
 
-    <div class="character_container">
+    <div class="character_container" id="contentToPrint">
         <img class="character" src="assets/body/1.png" />
         <div class="asset_wrapper">
             <img class="top" src="assets/top/top_001.png" />
@@ -23,17 +30,20 @@
             <img class="overall" src="assets\overall\overall_002.png" />
             <img class="costum" src="assets\costum\costum_006.png" />
         </div>
+        <ul>
+            <li><button class="btn btn-default" id="top_button" type="button">Top</button></li>
+            <li><button class="btn btn-default" id="bot_button" type="button">Bottom</button></li>
+            <li><button class="btn btn-default" id="shoes_button" type="button">Shoes</button></li>
+            <li><button class="btn btn-default" id="overall_button" type="button">Overall</button></li>
+            <li><button class="btn btn-default" id="costum_button" type="button">Costum</button></li>
+        </ul>
+        <button class="btn btn-default" id="shuffle_button" type="button">Shuffle</button>
+        <button onclick="Convert_HTML_To_PDF();">Convert HTML to PDF</button>
+
     </div>
 
     <div id="imageListContainer" class="image-list-container"></div>
 </div>
-    <ul>
-      <li><button class="btn btn-default" id="top_button" type="button">Top</button></li>
-      <li><button class="btn btn-default" id="bot_button" type="button">Bottom</button></li>
-      <li><button class="btn btn-default" id="shoes_button" type="button">Shoes</button></li>
-      <li><button class="btn btn-default" id="overall_button" type="button">Overall</button></li>
-      <li><button class="btn btn-default" id="costum_button" type="button">Costum</button></li>
-  </ul>
-  <button class="btn btn-default" id="shuffle_button" type="button">Shuffle</button>
+    
 </body>
 </html>

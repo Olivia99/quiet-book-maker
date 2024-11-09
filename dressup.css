@@ -67,7 +67,7 @@ ul{
 	height: 300px;
 	position:absolute;
 	padding-left: 7px;
-	padding-top: 600px;
+	padding-top: 615px;
 	z-index: 2;
    }
 
@@ -135,4 +135,9 @@ ul{
 
 .category-image:hover {
     transform: scale(1.1);
+}
+
+.canvas{
+	display: flex;
+	flex-direction: row;
 }

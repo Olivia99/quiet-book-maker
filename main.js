@@ -161,9 +161,7 @@ function updateVisibleComponents(category) {
             break;
         case "shoes":
             // Shoes category does not affect visibility of other items
-            top.style.display = "block";
-            bot.style.display = "block";
-            overall.style.display = "block";
+           
             costume.style.display = "none";
             break;
         default:
@@ -249,7 +247,30 @@ function updateVisibleComponents(category) {
 
     
     // Load initial images
-   // loadAndCombineImages();
+    loadAndCombineImages();
 
 });
 
+
+
+window.jsPDF = window.jspdf.jsPDF;
+
+function Convert_HTML_To_PDF() {
+    var doc = new jsPDF();
+	
+    // Source HTMLElement or a string containing HTML.
+    var elementHTML = document.querySelector("#contentToPrint");
+
+    doc.html(elementHTML, {
+        callback: function(doc) {
+            // Save the PDF
+            doc.save('document-html.pdf');
+        },
+        margin: [10, 10, 10, 10],
+        autoPaging: 'text',
+        x: 0,
+        y: 0,
+        width: 190*20, //target width in the PDF document
+        windowWidth: 675*20 //window width in CSS pixels
+    });
+}
