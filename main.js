@@ -235,8 +235,6 @@ function updateVisibleComponents(category) {
 
 
 
-
-
     function listCurrentComponents() {
         const canvas = document.getElementById("canvas");
         canvas.innerHTML = "";
@@ -252,130 +250,41 @@ function updateVisibleComponents(category) {
             { selector: '.costum', name: 'Costume' }
         ];
     
-        function trimSingleImage(img) {
-            return new Promise((resolve, reject) => {
-                try {
-                    const tempCanvas = document.createElement('canvas');
-                    const tempCtx = tempCanvas.getContext('2d');
-                    
-                    // 设置canvas尺寸
-                    tempCanvas.width = img.naturalWidth || img.width;
-                    tempCanvas.height = img.naturalHeight || img.height;
-    
-                    // 尝试绘制图片
-                    try {
-                        tempCtx.drawImage(img, 0, 0);
-                        // 尝试获取像素数据 - 如果这里失败，说明canvas被污染
-                        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                    } catch (e) {
-                        console.warn('Canvas may be tainted, returning original image:', e);
-                        resolve(img);
-                        return;
-                    }
-    
-                    // 获取像素数据
-                    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                    const pixels = imageData.data;
-                    let bound = {
-                        top: tempCanvas.height,
-                        left: tempCanvas.width,
-                        right: 0,
-                        bottom: 0
-                    };
-    
-                    // 扫描像素找到边界
-                    for(let y = 0; y < tempCanvas.height; y++) {
-                        for(let x = 0; x < tempCanvas.width; x++) {
-                            const idx = (y * tempCanvas.width + x) * 4;
-                            const alpha = pixels[idx + 3];
-                            
-                            if(alpha > 0) {
-                                bound.top = Math.min(bound.top, y);
-                                bound.left = Math.min(bound.left, x);
-                                bound.right = Math.max(bound.right, x);
-                                bound.bottom = Math.max(bound.bottom, y);
-                            }
-                        }
-                    }
-    
-                    // 检查是否找到有效边界
-                    if(bound.top <= bound.bottom && bound.left <= bound.right) {
-                        const padding = 10;
-                        const width = (bound.right - bound.left + 1) + (padding * 2);
-                        const height = (bound.bottom - bound.top + 1) + (padding * 2);
-    
-                        const finalCanvas = document.createElement('canvas');
-                        const finalCtx = finalCanvas.getContext('2d');
-                        finalCanvas.width = width;
-                        finalCanvas.height = height;
-    
-                        finalCtx.drawImage(
-                            tempCanvas,
-                            bound.left - padding,
-                            bound.top - padding,
-                            width,
-                            height,
-                            0,
-                            0,
-                            width,
-                            height
-                        );
-    
-                        // 直接返回 canvas 元素而不是转换为图片
-                        resolve(finalCanvas);
-                    } else {
-                        resolve(img);
-                    }
-                } catch (error) {
-                    console.error('Error in trimSingleImage:', error);
-                    resolve(img);
-                }
-            });
-        }
-    
         // 处理每个组件
         components.forEach(component => {
             const element = document.querySelector(component.selector);
             
             if (element && element.style.display !== "none" && element.src) {
                 const img = new Image();
-                img.crossOrigin = "anonymous";  // 添加跨域支持
                 
-                img.onload = async () => {
-                    try {
-                        const result = await trimSingleImage(img);
-                        const wrapper = document.createElement("div");
-                        wrapper.className = "canvas-item-wrapper";
-                        wrapper.style.position = "relative";
-                        wrapper.style.cursor = "move";
-                        
-                        if (result instanceof HTMLCanvasElement) {
-                            // 如果返回的是 canvas，直接使用它
-                            result.className = "canvas-item";
-                            result.draggable = true;
-                            wrapper.appendChild(result);
-                        } else {
-                            // 如果返回的是原始图片，使用它
-                            result.className = "canvas-item";
-                            result.draggable = true;
-                            wrapper.appendChild(result);
-                        }
-                        
-                        wrapper.addEventListener('mousedown', startDragging);
-                        canvas.appendChild(wrapper);
-                    } catch (error) {
-                        console.error('Error processing image:', error);
+                img.onload = () => {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "canvas-item-wrapper";
+                    wrapper.style.position = "relative";
+                    wrapper.style.cursor = "move";
+                    
+                    img.className = "canvas-item";
+                    img.draggable = true;
+
+                        // 如果是头发元素，复制原始元素的滤镜效果
+                if (component.selector.includes('hair')) {
+                    const originalElement = document.querySelector(component.selector);
+                    if (originalElement && originalElement.style.filter) {
+                        img.style.filter = originalElement.style.filter;
                     }
+                }
+                
+
+                    wrapper.appendChild(img);
+                    
+                    wrapper.addEventListener('mousedown', startDragging);
+                    canvas.appendChild(wrapper);
                 };
     
-                // 添加时间戳避免缓存
-                const timestamp = new Date().getTime();
-                img.src = `${element.src}${element.src.includes('?') ? '&' : '?'}_t=${timestamp}`;
+                img.src = element.src;
             }
         });
     }
-
-
 
 
 
@@ -442,6 +351,11 @@ function startDragging(e) {
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', stopDragging);
 }
+
+
+
+
+
 
 
 
@@ -669,6 +583,17 @@ function handleColorChange() {
     
     applyColorFilter(hairFront, color);
     applyColorFilter(hairBack, color);
+
+        // 更新 canvas 中的头发
+        const canvasHairFront = document.querySelector('#canvas .canvas-item-wrapper img[src*="hair_front"]');
+        const canvasHairBack = document.querySelector('#canvas .canvas-item-wrapper img[src*="hair_back"]');
+        
+        if (canvasHairFront) {
+            applyColorFilter(canvasHairFront, color);
+        }
+        if (canvasHairBack) {
+            applyColorFilter(canvasHairBack, color);
+        }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
