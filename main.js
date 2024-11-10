@@ -575,3 +575,157 @@ async function handleDownloadImage() {
     }
 }
 
+
+/*
+// ... existing code ...
+
+document.addEventListener("DOMContentLoaded", () => {
+    // 添加在现有的事件监听器内部
+    document.getElementById("applyHairColor").addEventListener("click", () => {
+        const color = document.getElementById("hairColorPicker").value;
+        applyHairColor(color);
+    });
+    
+    // ... existing event listeners ...
+});
+
+// 添加新函数用于改变头发颜色
+function applyHairColor(color) {
+    const hairFront = document.querySelector('.hair_front');
+    const hairBack = document.querySelector('.hair_back');
+    
+    // 创建临时canvas来处理前发
+    const tempCanvasFront = document.createElement('canvas');
+    const tempCanvasBack = document.createElement('canvas');
+    
+    // 处理前发
+    colorizeImage(hairFront, tempCanvasFront, color);
+    
+    // 处理后发
+    colorizeImage(hairBack, tempCanvasBack, color);
+}
+
+function colorizeImage(imgElement, canvas, color) {
+    if (!imgElement.complete || !imgElement.src) return;
+    
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    
+    img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // 绘制原始图片
+        ctx.drawImage(img, 0, 0);
+        
+        // 获取图片数据
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // 转换颜色从十六进制到RGB
+        const r = parseInt(color.substr(1,2), 16);
+        const g = parseInt(color.substr(3,2), 16);
+        const b = parseInt(color.substr(5,2), 16);
+        
+        // 处理每个像素
+        for (let i = 0; i < data.length; i += 4) {
+            // 如果像素不是完全透明的
+            if (data[i + 3] > 0) {
+                // 保持原始亮度
+                const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3 / 255;
+                
+                // 应用新颜色，保持原始亮度
+                data[i] = r * brightness;     // Red
+                data[i + 1] = g * brightness; // Green
+                data[i + 2] = b * brightness; // Blue
+                // Alpha通道保持不变
+            }
+        }
+        
+        // 将处理后的图片数据放回canvas
+        ctx.putImageData(imageData, 0, 0);
+        
+        // 更新原始图片源
+        imgElement.src = canvas.toDataURL('image/png');
+    };
+    
+    // 添加时间戳避免缓存
+    const timestamp = new Date().getTime();
+    img.src = `${imgElement.src}${imgElement.src.includes('?') ? '&' : '?'}_t=${timestamp}`;
+}
+
+// ... existing code ...
+
+*/
+
+
+
+// 将事件处理函数单独定义
+function handleColorChange() {
+    const color = document.getElementById("hairColorPicker").value;
+    const hairFront = document.querySelector('.hair_front');
+    const hairBack = document.querySelector('.hair_back');
+    
+    applyColorFilter(hairFront, color);
+    applyColorFilter(hairBack, color);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const applyButton = document.getElementById("applyHairColor");
+    // 移除旧的事件监听器（如果存在）并添加新的
+    applyButton.removeEventListener("click", handleColorChange);
+    applyButton.addEventListener("click", handleColorChange);
+});
+
+function applyColorFilter(element, color) {
+    if (!element) return;
+    
+    // 移除之前的所有滤镜
+    element.style.removeProperty('filter');
+    
+    // 移除旧的SVG滤镜（如果存在）
+    const oldFilter = document.getElementById('recolor');
+    if (oldFilter) {
+        oldFilter.remove();
+    }
+    
+    // 创建新的唯一ID
+    const filterId = `recolor_${new Date().getTime()}`;
+    
+    // 创建颜色矩阵滤镜
+    const svg = `
+        <svg style="display:none;">
+            <defs>
+                <filter id="${filterId}">
+                    <feColorMatrix
+                        type="matrix"
+                        values="${createColorMatrix(color)}"
+                    />
+                </filter>
+            </defs>
+        </svg>
+    `;
+    
+    // 添加新的SVG到文档中
+    document.body.insertAdjacentHTML('beforeend', svg);
+    
+    // 应用新的滤镜
+    element.style.filter = `url(#${filterId})`;
+}
+
+function createColorMatrix(hexColor) {
+    // 将十六进制颜色转换为RGB
+    const r = parseInt(hexColor.substr(1,2), 16) / 255;
+    const g = parseInt(hexColor.substr(3,2), 16) / 255;
+    const b = parseInt(hexColor.substr(5,2), 16) / 255;
+    
+    // 颜色矩阵
+    return `
+        ${r} 0 0 0 0
+        0 ${g} 0 0 0
+        0 0 ${b} 0 0
+        0 0 0 1 0
+    `.trim().replace(/\n/g, ' ');
+}
+

@@ -267,3 +267,35 @@ ul{
 .loading-spinner {
     margin-left: 8px;
 }
+
+
+#hairColorPicker {
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+#applyHairColor {
+    margin-left: 10px;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.hair-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.hair-wrapper img {
+    mix-blend-mode: luminosity;
+}
+
+.color-layer {
+    opacity: 0.8; /* 可以调整这个值来改变颜色的强度 */
+}
