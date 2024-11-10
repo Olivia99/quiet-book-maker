@@ -348,134 +348,7 @@ function startDragging(e) {
     document.addEventListener('mouseup', stopDragging);
 }
 
-// 添加新函数用于生成和下载PDF
-async function generateAndDownloadPDF() {
-    const canvas = document.getElementById('canvas');
-    
-    // US Letter 尺寸（landscape方向）
-    const US_LETTER = {
-        width: 11 * 96,   // 1056 pixels
-        height: 8.5 * 96  // 816 pixels
-    };
-    
-    try {
-        // 创建一个临时容器来保持布局
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.top = '0';
-        document.body.appendChild(tempContainer);
-        
-        // 克隆canvas及其内容
-        const canvasClone = canvas.cloneNode(true);
-        tempContainer.appendChild(canvasClone);
-        
-        // 保存原始尺寸
-        const originalWidth = canvas.offsetWidth;
-        const originalHeight = canvas.offsetHeight;
-        
-        // 计算缩放比例
-        const scale = Math.min(
-            US_LETTER.width / originalWidth,
-            US_LETTER.height / originalHeight
-        );
-        
-        // 计算缩放后的尺寸
-        const scaledWidth = originalWidth * scale;
-        const scaledHeight = originalHeight * scale;
-        
-        // 设置克隆容器的样式
-        canvasClone.style.width = `${scaledWidth}px`;
-        canvasClone.style.height = `${scaledHeight}px`;
-        canvasClone.style.position = 'relative';
-        canvasClone.style.backgroundColor = '#ffffff';
-        
-        // 调整克隆元素中所有项目的大小和位置
-        const clonedItems = canvasClone.querySelectorAll('.canvas-item-wrapper');
-        clonedItems.forEach(item => {
-            const originalItem = canvas.querySelector(`[data-id="${item.dataset.id}"]`);
-            if (!originalItem) return;
-            
-            const rect = originalItem.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
-            
-            // 计算相对位置
-            const relativeLeft = (rect.left - canvasRect.left) / originalWidth;
-            const relativeTop = (rect.top - canvasRect.top) / originalHeight;
-            
-            // 应用缩放后的位置和尺寸
-            item.style.position = 'absolute';
-            item.style.left = `${relativeLeft * scaledWidth}px`;
-            item.style.top = `${relativeTop * scaledHeight}px`;
-            item.style.width = `${(rect.width / originalWidth) * scaledWidth}px`;
-            item.style.height = `${(rect.height / originalHeight) * scaledHeight}px`;
-            
-            // 确保图片填充其容器
-            const img = item.querySelector('img');
-            if (img) {
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'contain';
-            }
-        });
-        
-        // 等待图片加载
-        await Promise.all(Array.from(canvasClone.querySelectorAll('img')).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-                img.onload = resolve;
-                img.onerror = resolve;
-            });
-        }));
-        
-        // 使用html2canvas捕获克隆的内容
-        const capturedCanvas = await html2canvas(canvasClone, {
-            allowTaint: true,
-            useCORS: true,
-            logging: true,
-            backgroundColor: '#ffffff',
-            scale: 2, // 提高输出质量
-            width: scaledWidth,
-            height: scaledHeight,
-            onclone: function(clonedDoc) {
-                const clonedElement = clonedDoc.querySelector('#canvas');
-                clonedElement.style.transform = 'none';
-            }
-        });
-        
-        // 创建PDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'in',
-            format: 'letter'
-        });
-        
-        // 计算居中位置
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const xOffset = (pdfWidth - (scaledWidth / 96)) / 2;
-        const yOffset = (pdfHeight - (scaledHeight / 96)) / 2;
-        
-        // 将捕获的内容添加到PDF
-        const imgData = capturedCanvas.toDataURL('image/png', 1.0);
-        pdf.addImage(imgData, 'PNG', 
-            xOffset, yOffset, 
-            scaledWidth / 96,
-            scaledHeight / 96
-        );
-        
-        // 下载PDF
-        pdf.save('chibi-doll-design.pdf');
-        
-        // 清理临时元素
-        document.body.removeChild(tempContainer);
-        
-    } catch (error) {
-        console.error('PDF生成错误:', error);
-        alert('生成PDF时发生错误，请重试');
-    }
-}
+
 
 // 确保每个canvas-item-wrapper都有唯一的ID
 document.addEventListener('DOMContentLoaded', function() {
@@ -492,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttonContainer = document.querySelector('.button-container') || document.querySelector('.element-wrapper');
     
     const downloadButton = document.createElement('button');
-    downloadButton.className = 'download-pdf-btn';
+    downloadButton.className = 'download-design-btn';
     downloadButton.innerHTML = `
         <span class="btn-text">下载设计图</span>
         <span class="loading-spinner" style="display: none;">
@@ -501,12 +374,12 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     buttonContainer.appendChild(downloadButton);
-    downloadButton.addEventListener('click', handleDownloadPDF);
+    downloadButton.addEventListener('click', handleDownloadImage);
 });
 
-// 下载PDF的处理函数
-async function handleDownloadPDF() {
-    const button = document.querySelector('.download-pdf-btn');
+// 下载图片的处理函数
+async function handleDownloadImage() {
+    const button = document.querySelector('.download-design-btn');
     const btnText = button.querySelector('.btn-text');
     const spinner = button.querySelector('.loading-spinner');
     const canvas = document.getElementById('canvas');
@@ -517,67 +390,61 @@ async function handleDownloadPDF() {
         btnText.style.display = 'none';
         spinner.style.display = 'inline-block';
 
-        // 1. 首先处理所有图片的跨域问题
-        const images = canvas.querySelectorAll('img');
-        await Promise.all([...images].map(img => {
-            return new Promise((resolve, reject) => {
-                const newImg = new Image();
-                newImg.crossOrigin = 'anonymous';  // 关键：添加跨域属性
-                
-                newImg.onload = () => {
-                    // 替换原始图片
-                    img.src = newImg.src;
-                    resolve();
-                };
-                
-                newImg.onerror = () => {
-                    // 如果跨域加载失败，尝试添加代理或时间戳
-                    const timestamp = new Date().getTime();
-                    newImg.src = `${img.src}${img.src.includes('?') ? '&' : '?'}timestamp=${timestamp}`;
-                };
-
-                // 设置原始图片源
-                newImg.src = img.src;
-            });
-        }));
-
-        // 2. 创建临时容器
+        // 1. 首先克隆canvas区域
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '0';
+        tempDiv.style.left = '-9999px';
         tempDiv.style.top = '0';
-        tempDiv.style.width = `${11 * 96}px`;
-        tempDiv.style.height = `${8.5 * 96}px`;
-        tempDiv.style.backgroundColor = '#ffffff';
         document.body.appendChild(tempDiv);
 
-        // 3. 克隆和调整canvas
         const canvasClone = canvas.cloneNode(true);
         tempDiv.appendChild(canvasClone);
 
-        const originalWidth = canvas.offsetWidth;
-        const originalHeight = canvas.offsetHeight;
-        const targetWidth = 11 * 96;
-        const targetHeight = 8.5 * 96;
-        const scale = Math.min(targetWidth / originalWidth, targetHeight / originalHeight);
+        // 2. 处理克隆区域中的所有图片
+        const images = canvasClone.querySelectorAll('img');
+        await Promise.all([...images].map(img => 
+            new Promise((resolve, reject) => {
+                const newImg = new Image();
+                newImg.crossOrigin = 'anonymous';
 
-        canvasClone.style.transform = `scale(${scale})`;
-        canvasClone.style.transformOrigin = 'top left';
-        canvasClone.style.width = `${originalWidth}px`;
-        canvasClone.style.height = `${originalHeight}px`;
+                newImg.onload = () => {
+                    // 创建临时canvas来转换图片
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = newImg.width;
+                    tempCanvas.height = newImg.height;
+                    const ctx = tempCanvas.getContext('2d');
+                    ctx.drawImage(newImg, 0, 0);
+                    
+                    // 将图片转换为base64并替换原始src
+                    try {
+                        const base64 = tempCanvas.toDataURL('image/png');
+                        img.src = base64;
+                        resolve();
+                    } catch (e) {
+                        // 如果转换失败，保留原始图片
+                        resolve();
+                    }
+                };
 
-        // 4. 使用html2canvas
+                newImg.onerror = () => {
+                    // 如果加载失败，保留原始图片
+                    resolve();
+                };
+
+                // 添加时间戳避免缓存
+                const timestamp = new Date().getTime();
+                newImg.src = `${img.src}${img.src.includes('?') ? '&' : '?'}_t=${timestamp}`;
+            })
+        ));
+
+        // 3. 使用html2canvas捕获处理后的区域
         const capturedCanvas = await html2canvas(canvasClone, {
-            allowTaint: false,  // 不允许污染
-            useCORS: true,     // 使用CORS
-            logging: false,
+            useCORS: true,
+            allowTaint: true,
             backgroundColor: '#ffffff',
             scale: 2,
-            width: targetWidth,
-            height: targetHeight,
-            imageTimeout: 0,    // 禁用超时
+            logging: true,
             onclone: function(clonedDoc) {
-                // 确保克隆的文档中的图片也是跨域的
                 const clonedImages = clonedDoc.querySelectorAll('img');
                 clonedImages.forEach(img => {
                     img.crossOrigin = 'anonymous';
@@ -585,26 +452,28 @@ async function handleDownloadPDF() {
             }
         });
 
-        // 5. 创建PDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: 'letter'
-        });
+        // 4. 创建下载链接
+        const link = document.createElement('a');
+        link.download = 'chibi-design.png';
+        
+        // 尝试直接转换为blob url
+        capturedCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
 
-        const imgData = capturedCanvas.toDataURL('image/png', 1.0);
-        pdf.addImage(imgData, 'PNG', 0, 0, targetWidth, targetHeight);
-        pdf.save('chibi-design.pdf');
+        // 5. 清理临时元素
+        document.body.removeChild(tempDiv);
 
     } catch (error) {
-        console.error('详细错误信息:', error);
-        alert(`生成PDF时发生错误: ${error.message}`);
+        console.error('图片生成错误:', error);
+        alert('生成图片时发生错误，请重试');
     } finally {
-        const tempDiv = document.querySelector('#temp-canvas-container');
-        if (tempDiv) {
-            document.body.removeChild(tempDiv);
-        }
+        // 恢复按钮状态
         button.disabled = false;
         btnText.style.display = 'inline-block';
         spinner.style.display = 'none';
