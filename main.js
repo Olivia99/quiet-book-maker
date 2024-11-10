@@ -409,6 +409,21 @@ async function handleDownloadImage() {
         const canvasClone = canvas.cloneNode(true);
         tempDiv.appendChild(canvasClone);
 
+
+         // 2. 复制头发的滤镜效果
+         const clonedHairFront = canvasClone.querySelector('img[src*="hair_front"]');
+         const clonedHairBack = canvasClone.querySelector('img[src*="hair_back"]');
+         const originalHairFront = canvas.querySelector('img[src*="hair_front"]');
+         const originalHairBack = canvas.querySelector('img[src*="hair_back"]');
+ 
+         if (clonedHairFront && originalHairFront) {
+             clonedHairFront.style.filter = originalHairFront.style.filter;
+         }
+         if (clonedHairBack && originalHairBack) {
+             clonedHairBack.style.filter = originalHairBack.style.filter;
+         }
+
+         
         // 2. 处理克隆区域中的所有图片
         const images = canvasClone.querySelectorAll('img');
         await Promise.all([...images].map(img => 
@@ -422,6 +437,12 @@ async function handleDownloadImage() {
                     tempCanvas.width = newImg.width;
                     tempCanvas.height = newImg.height;
                     const ctx = tempCanvas.getContext('2d');
+
+                     // 如果是头发图片，应用滤镜效果
+                     if (img.src.includes('hair_') && img.style.filter) {
+                        ctx.filter = img.style.filter;
+                    }
+                    
                     ctx.drawImage(newImg, 0, 0);
                     
                     // 将图片转换为base64并替换原始src
@@ -488,7 +509,6 @@ async function handleDownloadImage() {
         spinner.style.display = 'none';
     }
 }
-
 
 /*
 // ... existing code ...
@@ -653,4 +673,5 @@ function createColorMatrix(hexColor) {
         0 0 0 1 0
     `.trim().replace(/\n/g, ' ');
 }
+
 
