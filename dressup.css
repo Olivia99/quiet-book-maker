@@ -1,4 +1,3 @@
-
 body{
 	background-color: #e8e8e8;
   font-family: 'Ubuntu', sans-serif;
@@ -156,9 +155,86 @@ ul{
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    border: 1px solid #ccc; /* Optional: for visual clarity */
+    border: 1px solid #000000; /* Optional: for visual clarity */
     padding: 10px;
 	margin-top: 100px;
+	background-color: #ffffff;
     gap: 10px; /* Spacing between components */
 }
 
+
+.canvas-item-wrapper {
+    position: absolute;
+    transition: top 0.1s, left 0.1s; /* Smooth transition for positioning */
+    cursor: grab;
+}
+
+.canvas-item-wrapper:active {
+    cursor: grabbing;
+}
+
+.canvas-item-wrapper.dragging {
+    opacity: 0.8;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Shadow to lift the item */
+    z-index: 1000; /* Bring to front */
+}
+
+#download_pdf_button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+#download_pdf_button:hover {
+    background-color: #45a049;
+}
+
+.download-pdf-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    transition: background-color 0.3s;
+}
+
+.download-pdf-btn:hover {
+    background-color: #45a049;
+}
+
+.download-pdf-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.loading-spinner {
+    margin-left: 8px;
+}
+
+/* 确保canvas内的元素样式正确 */
+#canvas {
+    position: relative;
+    background-color: #ffffff;
+    min-height: 400px;
+}
+
+.canvas-item-wrapper {
+    position: absolute;
+    display: inline-block;
+}
+
+.canvas-item-wrapper img {
+    max-width: 100%;
+    height: auto;
+}
