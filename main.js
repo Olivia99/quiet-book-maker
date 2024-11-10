@@ -230,13 +230,14 @@ function updateVisibleComponents(category) {
 
 
 
-
-
-
-
+/*------------------------ listCurrentComponents Start--------------------------*/
+/*
 
     function listCurrentComponents() {
         const canvas = document.getElementById("canvas");
+      
+        
+        // 清空画布
         canvas.innerHTML = "";
     
         const components = [
@@ -250,7 +251,6 @@ function updateVisibleComponents(category) {
             { selector: '.costum', name: 'Costume' }
         ];
     
-        // 处理每个组件
         components.forEach(component => {
             const element = document.querySelector(component.selector);
             
@@ -265,19 +265,19 @@ function updateVisibleComponents(category) {
                     
                     img.className = "canvas-item";
                     img.draggable = true;
-
-                        // 如果是头发元素，复制原始元素的滤镜效果
-                if (component.selector.includes('hair')) {
-                    const originalElement = document.querySelector(component.selector);
-                    if (originalElement && originalElement.style.filter) {
-                        img.style.filter = originalElement.style.filter;
+    
+                    // 如果是头发元素，复制原始元素的滤镜效果
+                    if (component.selector.includes('hair')) {
+                        const originalElement = document.querySelector(component.selector);
+                        if (originalElement && originalElement.style.filter) {
+                            img.style.filter = originalElement.style.filter;
+                        }
                     }
-                }
-                
-
+    
                     wrapper.appendChild(img);
-                    
                     wrapper.addEventListener('mousedown', startDragging);
+                   
+                    
                     canvas.appendChild(wrapper);
                 };
     
@@ -285,10 +285,9 @@ function updateVisibleComponents(category) {
             }
         });
     }
+*/
 
-
-
-
+/*------------------------ listCurrentComponents End --------------------------*/
 
 
 
@@ -386,7 +385,20 @@ document.addEventListener('DOMContentLoaded', function() {
     downloadButton.addEventListener('click', handleDownloadImage);
 });
 
-// 下载图片的处理函数
+
+
+
+
+
+
+
+
+
+
+
+/*------------handleDownloadImage ---------------------*/
+
+
 async function handleDownloadImage() {
     const button = document.querySelector('.download-design-btn');
     const btnText = button.querySelector('.btn-text');
@@ -399,112 +411,84 @@ async function handleDownloadImage() {
         btnText.style.display = 'none';
         spinner.style.display = 'inline-block';
 
-        // 1. 克隆canvas区域
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '0';
-        document.body.appendChild(tempDiv);
+        // 创建一个新的canvas来绘制最终图像
+        const finalCanvas = document.createElement('canvas');
+        const ctx = finalCanvas.getContext('2d');
 
-        const canvasClone = canvas.cloneNode(true);
-        tempDiv.appendChild(canvasClone);
+        // 设置canvas尺寸为原始canvas的尺寸
+        finalCanvas.width = canvas.offsetWidth;
+        finalCanvas.height = canvas.offsetHeight;
 
-        // 2. 复制头发的滤镜效果
-        const clonedHairFront = canvasClone.querySelector('img[src*="hair_front"]');
-        const clonedHairBack = canvasClone.querySelector('img[src*="hair_back"]');
-        const originalHairFront = canvas.querySelector('img[src*="hair_front"]');
-        const originalHairBack = canvas.querySelector('img[src*="hair_back"]');
+        // 设置白色背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
 
-        if (clonedHairFront && originalHairFront) {
-            clonedHairFront.style.filter = originalHairFront.style.filter;
-        }
-        if (clonedHairBack && originalHairBack) {
-            clonedHairBack.style.filter = originalHairBack.style.filter;
-        }
+        // 获取所有图片元素并按照它们的位置绘制
+        const items = canvas.querySelectorAll('.canvas-item-wrapper');
+        
+        for (const wrapper of items) {
+            const img = wrapper.querySelector('img');
+            if (!img) continue;
 
-        // 3. 处理克隆区域中的所有图片
-        const images = canvasClone.querySelectorAll('img');
-        await Promise.all([...images].map(img => 
-            new Promise((resolve, reject) => {
-                const newImg = new Image();
-                newImg.crossOrigin = 'anonymous';
+            // 获取图片的位置信息
+            const rect = wrapper.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            // 计算相对于canvas的位置
+            const x = rect.left - canvasRect.left;
+            const y = rect.top - canvasRect.top;
 
-                newImg.onload = () => {
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = newImg.width;
-                    tempCanvas.height = newImg.height;
-                    const ctx = tempCanvas.getContext('2d');
-                    
-                    // 如果是头发图片，应用滤镜效果
-                    if (img.src.includes('hair_') && img.style.filter) {
-                        ctx.filter = img.style.filter;
-                    }
-                    
-                    ctx.drawImage(newImg, 0, 0);
-                    
-                    try {
-                        const base64 = tempCanvas.toDataURL('image/png');
-                        img.src = base64;
-                        resolve();
-                    } catch (e) {
-                        resolve();
-                    }
-                };
+            // 如果是头发图片，需要应用当前的滤镜效果
+            if (img.src.includes('hair_')) {
+                // 创建临时canvas来应用滤镜
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
 
-                newImg.onerror = () => resolve();
+                // 应用当前的滤镜效果
+                tempCtx.filter = img.style.filter;
+                tempCtx.drawImage(img, 0, 0, img.width, img.height);
 
-                const timestamp = new Date().getTime();
-                newImg.src = `${img.src}${img.src.includes('?') ? '&' : '?'}_t=${timestamp}`;
-            })
-        ));
-
-        // 4. 使用html2canvas捕获
-        const capturedCanvas = await html2canvas(canvasClone, {
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            scale: 2,
-            logging: true,
-            onclone: function(clonedDoc) {
-                const clonedImages = clonedDoc.querySelectorAll('img');
-                clonedImages.forEach(img => {
-                    if (img.src.includes('hair_')) {
-                        // 保持头发的滤镜效果
-                        const originalImg = canvas.querySelector(`img[src*="${img.src.split('?')[0]}"]`);
-                        if (originalImg && originalImg.style.filter) {
-                            img.style.filter = originalImg.style.filter;
-                        }
-                    }
-                    img.crossOrigin = 'anonymous';
-                });
+                // 将处理后的图片绘制到最终canvas
+                ctx.drawImage(tempCanvas, x, y, img.width, img.height);
+            } else {
+                // 直接绘制其他图片
+                ctx.drawImage(img, x, y, img.width, img.height);
             }
-        });
+        }
 
-        // 5. 创建下载链接
+        // 创建下载链接
         const link = document.createElement('a');
         link.download = 'chibi-design.png';
         
-        capturedCanvas.toBlob((blob) => {
+        finalCanvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             link.href = url;
-            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }, 'image/png');
-
-        // 6. 清理临时元素
-        document.body.removeChild(tempDiv);
 
     } catch (error) {
         console.error('图片生成错误:', error);
         alert('生成图片时发生错误，请重试');
     } finally {
+        // 恢复按钮状态
         button.disabled = false;
         btnText.style.display = 'inline-block';
         spinner.style.display = 'none';
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 /*
 // ... existing code ...
