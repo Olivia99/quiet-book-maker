@@ -411,11 +411,11 @@ async function handleDownloadImage() {
         btnText.style.display = 'none';
         spinner.style.display = 'inline-block';
 
-        // 创建一个新的canvas来绘制最终图像
+        // 创建一个新的canvas
         const finalCanvas = document.createElement('canvas');
         const ctx = finalCanvas.getContext('2d');
 
-        // 设置canvas尺寸为原始canvas的尺寸
+        // 设置canvas尺寸
         finalCanvas.width = canvas.offsetWidth;
         finalCanvas.height = canvas.offsetHeight;
 
@@ -423,45 +423,67 @@ async function handleDownloadImage() {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
 
-        // 获取所有图片元素并按照它们的位置绘制
+        // 获取所有图片元素
         const items = canvas.querySelectorAll('.canvas-item-wrapper');
         
-        for (const wrapper of items) {
-            const img = wrapper.querySelector('img');
-            if (!img) continue;
+        // 创建一个Promise数组来处理所有图片
+        const drawPromises = Array.from(items).map(wrapper => {
+            return new Promise((resolve) => {
+                const img = wrapper.querySelector('img');
+                if (!img) {
+                    resolve();
+                    return;
+                }
 
-            // 获取图片的位置信息
-            const rect = wrapper.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
-            
-            // 计算相对于canvas的位置
-            const x = rect.left - canvasRect.left;
-            const y = rect.top - canvasRect.top;
+                // 获取位置信息
+                const rect = wrapper.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                const x = rect.left - canvasRect.left;
+                const y = rect.top - canvasRect.top;
 
-            // 如果是头发图片，需要应用当前的滤镜效果
-            if (img.src.includes('hair_')) {
-                // 创建临时canvas来应用滤镜
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCanvas.width = img.width;
-                tempCanvas.height = img.height;
+                // 如果是头发图片
+                if (img.src.includes('hair_')) {
+                    // 创建临时canvas
+                    const tempCanvas = document.createElement('canvas');
+                    const tempCtx = tempCanvas.getContext('2d');
+                    
+                    // 加载原始图片
+                    const originalImg = new Image();
+                    originalImg.crossOrigin = 'anonymous';
+                    originalImg.onload = () => {
+                        tempCanvas.width = img.width;
+                        tempCanvas.height = img.height;
+                        
+                        // 应用滤镜
+                        tempCtx.filter = img.style.filter;
+                        tempCtx.drawImage(originalImg, 0, 0, img.width, img.height);
+                        
+                        // 绘制到最终canvas
+                        ctx.drawImage(tempCanvas, x, y, img.width, img.height);
+                        resolve();
+                    };
+                    originalImg.src = img.src;
+                } else {
+                    // 非头发图片直接绘制
+                    const newImg = new Image();
+                    newImg.crossOrigin = 'anonymous';
+                    newImg.onload = () => {
+                        ctx.drawImage(newImg, x, y, img.width, img.height);
+                        resolve();
+                    };
+                    newImg.src = img.src;
+                }
+            });
+        });
 
-                // 应用当前的滤镜效果
-                tempCtx.filter = img.style.filter;
-                tempCtx.drawImage(img, 0, 0, img.width, img.height);
-
-                // 将处理后的图片绘制到最终canvas
-                ctx.drawImage(tempCanvas, x, y, img.width, img.height);
-            } else {
-                // 直接绘制其他图片
-                ctx.drawImage(img, x, y, img.width, img.height);
-            }
-        }
+        // 等待所有图片绘制完成
+        await Promise.all(drawPromises);
 
         // 创建下载链接
         const link = document.createElement('a');
         link.download = 'chibi-design.png';
         
+        // 转换为blob并下载
         finalCanvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             link.href = url;
@@ -479,8 +501,6 @@ async function handleDownloadImage() {
         spinner.style.display = 'none';
     }
 }
-
-
 
 
 
