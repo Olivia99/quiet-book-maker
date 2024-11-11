@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>安静书创作</title>
+    <link rel="stylesheet" href="quietbook.css">
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+    <script src="quietbook.js"></script>
+    <script src="quietbook.css"></script>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="location.href='index.html'">返回主页</button>
+        <button id="addPage">添加页面</button>
+        <button id="savePage">保存当前页</button>
+        <button id="exportBook">导出安静书</button>
+    </div>
+    
+    <div class="book-container">
+        <div class="page-navigation">
+            <!-- 页面缩略图将在这里动态生成 -->
+        </div>
+        
+        <div class="current-page">
+            <div class="page left-page"></div>
+            <div class="page right-page"></div>
+        </div>
+        
+        <div class="elements-panel">
+            <!-- 素材分类和元素将在这里动态生成 -->
+        </div>
+    </div>
+
+    <script src="quietbook.js"></script>
+</body>
+</html>

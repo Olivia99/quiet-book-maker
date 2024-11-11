@@ -1,0 +1,144 @@
+.book-container {
+    display: flex;
+    height: 100vh;
+    padding: 20px;
+    gap: 20px;
+}
+
+.page-navigation {
+    width: 200px;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.page-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.page-navigation .page-thumb {
+    width: 80px;
+    height: 104px;
+    background: white;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-navigation .cover-thumb {
+    width: 80px;
+    margin: 0 auto;
+}
+
+.page-navigation .page-thumb.active {
+    border: 2px solid #4CAF50;
+    background-color: #f0f9f0;
+}
+
+.current-page {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.page {
+    width: 726px;
+    height: 943.8px;
+    background: #fff;
+    border: 6px solid #000000;
+    border-radius: 24px;
+}
+
+.left-page {
+    margin-right: 10px;
+}
+
+.right-page {
+    margin-left: 10px;
+}
+
+.elements-panel {
+    width: 300px;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+.category-section {
+    margin-bottom: 20px;
+}
+
+.category-header {
+    background: #4CAF50;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.subcategory-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.subcategory {
+    background: #ff5252;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.elements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.element-item {
+    background: #ddd;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.page-thumb[data-page-type="left"] {
+    margin-right: 5px;
+}
+
+.page-thumb[data-page-type="right"] {
+    margin-left: 5px;
+}
+
+.thumb-preview {
+    width: 80px;
+    height: 104px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.thumb-title {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+.page-thumb.active .thumb-preview {
+    border: 2px solid #4CAF50;
+    background-color: #f0f9f0;
+}
