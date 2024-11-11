@@ -195,23 +195,23 @@ function updateVisibleComponents(category) {
         switch (category) {
             case "top":
                 imageFiles = topFiles;  // Assuming 'pieceFiles' holds 'top' files
-                directoryPath = "assets/top";
+                directoryPath = "assets/chibidoll/top";
                 break;
             case "bot":
                 imageFiles = botFiles;
-                directoryPath = "assets/bot";
+                directoryPath = "assets/chibidoll/bot";
                 break;
             case "shoes":
                 imageFiles = shoesFiles;
-                directoryPath = "assets/shoes";
+                directoryPath = "assets/chibidoll/shoes";
                 break;
             case "overall":
                 imageFiles = overallFiles; // Using overall pieces from 'pieceFiles'
-                directoryPath = "assets/overall";
+                directoryPath = "assets/chibidoll/overall";
                 break;
             case "costum":
                 imageFiles = costumFiles;  // Assuming 'costum' refers to hair components
-                directoryPath = "assets/costum";
+                directoryPath = "assets/chibidoll/costum";
                 break;
             default:
                 return;
