@@ -1,64 +1,54 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Chibi Doll Dress Up</title>
-    <link rel="stylesheet" type="text/css" href="dressup.css">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
-   
-   <!-- html2canvas library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <!-- jsPDF library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <script src="main.js"></script>
-    <script src="crop_img.js"></script>
+    <meta charset="utf-8">
+    <title>创意工坊</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            gap: 40px;
+        }
+        .game-option {
+            width: 300px;
+            height: 400px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .game-option:hover {
+            transform: scale(1.05);
+            border-color: #4CAF50;
+        }
+        .game-option img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        .game-option h2 {
+            color: #333;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-   
-<div class="playground" >
-
-
-    <div class="character_container" >
-        <img class="character" src="assets/body/1.png" />
-        <div class="asset_wrapper">
-            <img class="top pos" src="assets/top/top_001.png" />
-            <img class="bot" src="assets/bot/bot_027.png" />
-            <img class="hair_front" src="assets/hair_front/long_hair_front_003.png" />
-            <img class="hair_back" src="assets/hair_back/long_hair_back_01.png" />
-            <img class="shoes" src="assets/shoes/shoes_009.png" />
-            <img class="overall" src="assets\overall\overall_002.png" />
-            <img class="costum" src="assets\costum\costum_006.png" />
+    <div class="container">
+        <div class="game-option" onclick="location.href='dressup.html'">
+            <img src="assets/icons/dressup-icon.png" alt="角色换装">
+            <h2>角色换装</h2>
         </div>
-       
-       
-       
-
+        <div class="game-option" onclick="location.href='quietbook.html'">
+            <img src="assets/icons/book-icon.png" alt="安静书">
+            <h2>安静书创作</h2>
+        </div>
     </div>
-
-    <div class="element-wrapper">
-            <button class="btn btn-default" id="top_button" type="button">Top</button>
-            <button class="btn btn-default" id="bot_button" type="button">Bottom</button>
-            <button class="btn btn-default" id="shoes_button" type="button">Shoes</button>
-           <button class="btn btn-default" id="overall_button" type="button">Overall</button>
-            <button class="btn btn-default" id="costum_button" type="button">Costume</button>
-            <button class="btn btn-default" id="shuffle_button" type="button">Shuffle</button>
-         
-           
-            <button class="btn btn-default" id="generate_button" type="button">Generate PDF Outline</button>
-            
-            <input type="color" id="hairColorPicker" value="#000000">
-        <button id="applyHairColor">应用发色</button>
-
-        
-        <div id="imageListContainer" class="image-list-container"></div>
-    </div>
-</div>
-
-<div id="contentToPrint">
-<div id="canvas" class="canvas-item-wrapper" ></div>
-</div>
-    
 </body>
 </html>

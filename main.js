@@ -31,15 +31,15 @@ async function loadImagesFromDirectory(directoryPath, filenames) {
 // Load and combine all images
 async function loadAndCombineImages() {
     // Define directories (adjust paths as needed)
-    const hairDirectory = "assets/hair_front";
-    const hairBackDirectory = "assets/hair_back";
-    const bodyDirectory = "assets/body";
+    const hairDirectory = "assets/chibidoll/hair_front";
+    const hairBackDirectory = "assets/chibidoll/hair_back";
+    const bodyDirectory = "assets/chibidoll/body";
    
-    const shoesDirectory = "assets/shoes";
-    const botDirectory = "assets/bot";
-    const topDirectory = "assets/top"
-    const overallDirectory = "assets/overall"
-    const costumDirectory = "assets/costum"
+    const shoesDirectory = "assets/chibidoll/shoes";
+    const botDirectory = "assets/chibidoll/bot";
+    const topDirectory = "assets/chibidoll/top"
+    const overallDirectory = "assets/chibidoll/overall"
+    const costumDirectory = "assets/chibidoll/costum"
 
     // Load images from each category
     hairImages = await loadImagesFromDirectory(hairDirectory, hairFiles);

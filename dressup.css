@@ -156,10 +156,10 @@ ul{
     flex-wrap: wrap;
     align-items: flex-start;
     border: 1px solid #000000; /* Optional: for visual clarity */
-    padding: 10px;
+    padding: 40px;
 	margin-top: 100px;
 	background-color: #ffffff;
-    gap: 10px; /* Spacing between components */
+    gap: 30px; /* Spacing between components */
 }
 
 
