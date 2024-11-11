@@ -3,6 +3,7 @@
     height: 100vh;
     padding: 20px;
     gap: 20px;
+    overflow: auto;
 }
 
 .page-navigation {
@@ -20,43 +21,82 @@
     display: flex;
     gap: 10px;
     justify-content: center;
+    margin-bottom: 10px;
 }
 
-.page-navigation .page-thumb {
-    width: 80px;
-    height: 104px;
-    background: white;
-    border: 1px solid #ddd;
-    cursor: pointer;
+.page-thumb {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
 }
 
-.page-navigation .cover-thumb {
+.thumb-preview {
     width: 80px;
-    margin: 0 auto;
+    height: 104px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-.page-navigation .page-thumb.active {
+.thumb-title {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.page-thumb.active .thumb-preview {
     border: 2px solid #4CAF50;
     background-color: #f0f9f0;
 }
 
+.page-thumb:hover .thumb-preview {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 .current-page {
+    --current-page-width: min(100%, 1584px);  /* 设置最大宽度 */
+    --page-gap: 20px;                         /* 页面间距 */
+    --page-width: calc((var(--current-page-width) - var(--page-gap)) / 2);  /* 单页宽度 */
+    
+    flex: 1;
     display: flex;
-    gap: 20px;
+    align-items: flex-start;
     justify-content: center;
+    gap: var(--page-gap);
+    padding: 20px;
+    width: var(--current-page-width);
+    height: 100%;
+    margin: 0 auto;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 10px;
+    width: var(--page-width);  /* 使用计算好的页面宽度 */
+    height: 100%;
 }
 
 .page {
-    width: 726px;
-    height: 943.8px;
+    width: 100%;
+    height: calc(var(--page-width) * 1.3);  /* 使用页面宽度变量计算高度 */
     background: #fff;
     border: 6px solid #000000;
     border-radius: 24px;
+    position: relative;
+}
+
+.page-number {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-top: 5px;
 }
 
 .left-page {
@@ -124,21 +164,24 @@
     margin-left: 5px;
 }
 
-.thumb-preview {
+.page-navigation .page-thumb {
     width: 80px;
     height: 104px;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-.thumb-title {
-    font-size: 12px;
-    color: #666;
-    text-align: center;
+.page-navigation .cover-thumb {
+    width: 80px;
+    margin: 0 auto;
 }
 
-.page-thumb.active .thumb-preview {
+.page-navigation .page-thumb.active {
     border: 2px solid #4CAF50;
     background-color: #f0f9f0;
 }
