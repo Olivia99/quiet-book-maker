@@ -32,7 +32,7 @@ async function loadImagesFromDirectory(directoryPath, filenames) {
 async function loadAndCombineImages() {
     // Define directories (adjust paths as needed)
     const hairDirectory = "assets/chibidoll/hair_front";
-    const hairBackDirectory = "assets/chibidoll/hair_back";
+    const hairBackDirectory = "assets/chibidoll/hair_back"; 
     const bodyDirectory = "assets/chibidoll/body";
    
     const shoesDirectory = "assets/chibidoll/shoes";
